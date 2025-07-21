@@ -7,41 +7,37 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-
-class MyElem {
-    public String value;
-
-    public MyElem(){
-        value = "";
-    }
-
-    public MyElem(String s){
-        value = s;
-    }
-}
+import fr.gautrais.liste.model.entities.ListEntryWithItems;
+import fr.gautrais.liste.model.entities.ListItemEntry;
 
 
 public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
+    private ListEntryWithItems liste;
 
-    private ArrayList<MyElem> localDataSet;
 
     private boolean is_adding = false;
 
-    /**
-     * Provide a reference to the type of views that you are using
-     * (custom ViewHolder)
-     */
-    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnFocusChangeListener, TextView.OnEditorActionListener {
+    // Interface pour support drag & drop
+    public interface ItemTouchHelperAdapter {
+        boolean onItemMove(int fromPosition, int toPosition);
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder implements
+            View.OnClickListener,
+            View.OnFocusChangeListener,
+            TextView.OnEditorActionListener, CompoundButton.OnCheckedChangeListener {
+
         private final TextView textView;
         private final CheckBox checkBox;
         private final EditText entry;
@@ -52,9 +48,9 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
 
         private final ImageButton remove_btn;
 
-        private final ArrayList<MyElem> dataset;
+        private final ListEntryWithItems liste_parent;
 
-        private MyElem value;
+        private ListItemEntry value;
 
 
 
@@ -68,24 +64,26 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
             textView = (TextView) view.findViewById(R.id.tv_text);
             textView.setOnClickListener(this);
             checkBox = (CheckBox) view.findViewById(R.id.cb_checked);
+            checkBox.setOnCheckedChangeListener(this);
             entry = (EditText) view.findViewById(R.id.et_text);
             remove_btn = view.findViewById(R.id.btn_delete);
             remove_btn.setOnClickListener(this);
             entry.setOnFocusChangeListener(this);
             entry.setOnEditorActionListener(this);
             parent = p;
-            dataset = parent.getData();
+            liste_parent = parent.getData();
         }
 
         public int get_position() {
-            return dataset.indexOf(value);
+            return liste_parent.items.indexOf(value);
         }
 
         public void set_data(int i){
-            MyElem content = dataset.get(i);
+            ListItemEntry content = liste_parent.items.get(i);
             value = content;
-            textView.setText(content.value);
-            entry.setText(content.value);
+            textView.setText(content.content);
+            entry.setText(content.content);
+            checkBox.setChecked(value.checked);
             this._update();
 
         }
@@ -123,8 +121,9 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
         }
 
         public void on_valid(){
-            value.value = entry.getText().toString();
-            textView.setText(value.value);
+            value.content = entry.getText().toString();
+            value.update();
+            textView.setText(value.content);
         }
 
         @Override
@@ -147,10 +146,16 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
             }
             return false;
         }
+
+        @Override
+        public void onCheckedChanged(@NonNull CompoundButton compoundButton, boolean b) {
+            value.checked = b;
+            value.update();
+        }
     }
 
-    public ArrayList<MyElem> getData() {
-        return localDataSet;
+    public ListEntryWithItems getData() {
+        return liste;
     }
 
     /**
@@ -159,8 +164,8 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
      * @param dataSet String[] containing the data to populate views to be used
      * by RecyclerView
      */
-    public ItemAdapter(ArrayList<MyElem> dataSet) {
-        localDataSet = dataSet;
+    public ItemAdapter(ListEntryWithItems dataSet) {
+        liste = dataSet;
     }
 
     // Create new views (invoked by the layout manager)
@@ -189,14 +194,18 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
 
 
     public void insert_after(int i) {
-        localDataSet.add(i+1, new MyElem());
+        liste.add_item("", i+1);
         is_adding = true;
-        //notifyItemChanged(i+1);
-        notifyDataSetChanged();
+        notifyItemInserted(i+1);
+        //notifyDataSetChanged();
+    }
+
+    public void insert_after() {
+        insert_after(liste.items.size()-1);
     }
 
     public void on_remove(int i){
-        localDataSet.remove(i);
+        liste.remove_item(liste.items.get(i));
         notifyItemRemoved(i);
     }
 
@@ -205,6 +214,21 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return localDataSet.size();
+        return liste.items.size();
+    }
+
+    // Swap temporaire utilisé pendant le déplacement
+    public void swapItems(int fromPosition, int toPosition) {
+        liste.items.get(fromPosition).order_num = toPosition;
+        liste.items.get(fromPosition).update();
+        liste.items.get(toPosition).order_num = fromPosition;
+        liste.items.get(toPosition).update();
+        Collections.swap(liste.items, fromPosition, toPosition);
+
+        notifyItemMoved(fromPosition, toPosition);
+    }
+
+    // Appelée une seule fois à la fin du drag & drop
+    public void onItemMoveFinal(int fromPosition, int toPosition) {
     }
 }
