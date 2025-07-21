@@ -6,6 +6,7 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
+import fr.gautrais.liste.model.dao.CategoryDao;
 import fr.gautrais.liste.model.dao.ListEntryDao;
 import fr.gautrais.liste.model.dao.ListItemEntryDao;
 import fr.gautrais.liste.model.entities.Category;
@@ -19,6 +20,9 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public abstract ListItemEntryDao listeItemDao();
     public abstract ListEntryDao listeDao();
+    public abstract CategoryDao categoryDao();
+
+
     public static AppDatabase getInstance() {
         return getInstance(null);
     }

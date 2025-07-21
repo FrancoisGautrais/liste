@@ -45,4 +45,7 @@ public interface ListEntryDao {
 
     @Query("SELECT * FROM ListEntry WHERE id = :id")
     ListEntry get(String id);
+
+    @Query("SELECT * FROM ListEntry WHERE category_id = :id")
+    List<ListEntry> get_from_category(String id);
 }

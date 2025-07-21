@@ -70,12 +70,13 @@ public class ListEntryWithItems {
         if(!found) return;
 
         for(int j=i+1; j<items.size(); j++){
-            items.get(j).order_num++;
+            items.get(j).order_num--;
             items.get(j).update();
         }
 
 
         AppDatabase.getInstance().listeItemDao().delete(id);
+
 
     }
 

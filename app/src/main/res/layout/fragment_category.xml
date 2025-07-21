@@ -1,14 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="5dp"
+    android:background="#625959"
     tools:context=".CategoryFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:background="#A9B6B6"
+        android:orientation="vertical">
 
+        <LinearLayout
+            android:id="@+id/llh_category"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#46AF6C"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/ib_arrow"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_margin="0dp"
+                android:layout_marginHorizontal="0dp"
+                android:layout_marginVertical="0dp"
+                android:layout_marginStart="0dp"
+                android:layout_marginLeft="0dp"
+                android:layout_marginTop="0dp"
+                android:layout_marginEnd="0dp"
+                android:layout_marginRight="0dp"
+                android:layout_marginBottom="0dp"
+                android:layout_weight="0"
+                android:background="#00FFFFFF"
+                android:padding="0dp"
+                android:paddingStart="0dp"
+                android:paddingLeft="0dp"
+                android:paddingTop="0dp"
+                android:paddingEnd="0dp"
+                android:paddingRight="0dp"
+                android:paddingBottom="0dp"
+                android:scaleType="centerInside"
+                android:scaleX="0.5"
+                android:scaleY="0.5" />
+
+            <TextView
+                android:id="@+id/tv_category"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-black"
+                android:gravity="center"
+                android:text="TextView"
+                android:textAlignment="center" />
+
+            <ImageButton
+                android:id="@+id/ib_add"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_weight="0"
+                android:background="#00FFFFFF"
+                android:paddingLeft="12dp"
+                android:paddingTop="12dp"
+                android:paddingEnd="12dp"
+                android:paddingRight="12dp"
+                android:paddingBottom="12dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/add" />
+
+            <ImageButton
+                android:id="@+id/ib_settings"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_weight="0"
+                android:background="#00FFFFFF"
+                android:padding="12dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/menu" />
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rc_listes"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:backgroundTint="#00D3D3D3" />
+    </LinearLayout>
 </FrameLayout>

@@ -3,24 +3,17 @@ package fr.gautrais.liste;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.util.Log;
 import android.view.View;
 
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
+import fr.gautrais.liste.adapter.ItemAdapter;
 import fr.gautrais.liste.databinding.ActivityEditListBinding;
 import fr.gautrais.liste.model.AppDatabase;
 import fr.gautrais.liste.model.entities.ListEntryWithItems;
@@ -43,7 +36,7 @@ public class EditListActivity extends AppCompatActivity implements View.OnClickL
         current.sort();
 
         binding = ActivityEditListBinding.inflate(getLayoutInflater());
-        itemAdapter = new ItemAdapter(current);
+        itemAdapter = new ItemAdapter(this, current);
         setContentView(binding.getRoot());
         binding.toolbar.setTitle(current.liste.name);
 

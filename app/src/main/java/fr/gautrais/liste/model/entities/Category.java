@@ -6,6 +6,8 @@ import androidx.room.PrimaryKey;
 
 import java.util.UUID;
 
+import fr.gautrais.liste.model.AppDatabase;
+
 @Entity
 public class Category {
 
@@ -31,5 +33,7 @@ public class Category {
     }
 
 
-
+    public void update() {
+        AppDatabase.getInstance().categoryDao().update(this);
+    }
 }
