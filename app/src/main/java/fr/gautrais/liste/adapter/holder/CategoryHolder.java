@@ -1,12 +1,10 @@
 package fr.gautrais.liste.adapter.holder;
-
+import fr.gautrais.liste.adapter.Const;
 import android.content.DialogInterface;
-import android.view.ContextMenu;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -51,9 +49,16 @@ public class CategoryHolder   extends BaseHolder<Category> implements View.OnCli
         mTextView = view.findViewById(R.id.tv_category);
         mRecycler = view.findViewById(R.id.rc_listes);
 
-        mBtnAdd.setOnClickListener(this);
+        if(mMode != Const.MODE_SELECT_NONE){
+            mBtnAdd.setVisibility(View.GONE);
+            mBtnSettings.setVisibility(View.GONE);
+
+        }else{
+            mBtnAdd.setOnClickListener(this);
+            mBtnSettings.setOnClickListener(this);
+        }
+
         mTextView.setOnClickListener(this);
-        mBtnSettings.setOnClickListener(this);
         mArrow.setOnClickListener(this);
 
 
@@ -89,62 +94,62 @@ public class CategoryHolder   extends BaseHolder<Category> implements View.OnCli
         if(mLists==null){
             mLists = AppDatabase.getInstance().listeDao().get_from_category(mValue.id);
         }
+        if(mAdapter == null) {
+            mAdapter = new ListAdapter(mParent.getActivity(), mLists, mMode);
+            mAdapter.setParent(mParent);
 
-        mAdapter = new ListAdapter(mArrow.getContext(), mLists);
+            mRecycler.setLayoutManager(new LinearLayoutManager(mRecycler.getContext()));
+            mRecycler.setAdapter(mAdapter);
+            if (!mVisible) {
+                collapse();
+            }
 
-        mRecycler.setLayoutManager(new LinearLayoutManager(mRecycler.getContext()));
-        mRecycler.setAdapter(mAdapter);
-        if(!mVisible){
-            collapse();
+
+            ItemTouchHelper.Callback callback = new ItemTouchHelper.SimpleCallback(
+                    ItemTouchHelper.UP | ItemTouchHelper.DOWN,
+                    0  // pas de swipe
+            ) {
+                private int fromPos = -1;
+                private int toPos = -1;
+
+                @Override
+                public boolean onMove(RecyclerView recyclerView,
+                                      RecyclerView.ViewHolder viewHolder,
+                                      RecyclerView.ViewHolder target) {
+                    if (fromPos == -1) {
+                        fromPos = viewHolder.getBindingAdapterPosition();
+                    }
+                    toPos = target.getBindingAdapterPosition();
+
+                    // Affichage visuel seulement (swap temporaire)
+                    mAdapter.swapItems(viewHolder.getBindingAdapterPosition(), target.getBindingAdapterPosition());
+                    return true;
+                }
+
+                @Override
+                public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                    // Pas de swipe
+                }
+
+                @Override
+                public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                    super.clearView(recyclerView, viewHolder);
+                    if (fromPos != -1 && toPos != -1 && fromPos != toPos) {
+                        mAdapter.onItemMoveFinal(fromPos, toPos);
+                    }
+                    fromPos = toPos = -1;
+                }
+
+                @Override
+                public boolean isLongPressDragEnabled() {
+                    return true;
+                }
+            };
+
+
+            ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+            touchHelper.attachToRecyclerView(mRecycler);
         }
-
-
-        ItemTouchHelper.Callback callback = new ItemTouchHelper.SimpleCallback(
-                ItemTouchHelper.UP | ItemTouchHelper.DOWN,
-                0  // pas de swipe
-        ) {
-            private int fromPos = -1;
-            private int toPos = -1;
-
-            @Override
-            public boolean onMove(RecyclerView recyclerView,
-                                  RecyclerView.ViewHolder viewHolder,
-                                  RecyclerView.ViewHolder target) {
-                if (fromPos == -1) {
-                    fromPos = viewHolder.getBindingAdapterPosition();
-                }
-                toPos = target.getBindingAdapterPosition();
-
-                // Affichage visuel seulement (swap temporaire)
-                mAdapter.swapItems(viewHolder.getBindingAdapterPosition(), target.getBindingAdapterPosition());
-                return true;
-            }
-
-            @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                // Pas de swipe
-            }
-
-            @Override
-            public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-                super.clearView(recyclerView, viewHolder);
-                if (fromPos != -1 && toPos != -1 && fromPos != toPos) {
-                    mAdapter.onItemMoveFinal(fromPos, toPos);
-                }
-                fromPos = toPos = -1;
-            }
-
-            @Override
-            public boolean isLongPressDragEnabled() {
-                return true;
-            }
-        };
-
-
-        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
-        touchHelper.attachToRecyclerView(mRecycler);
-
-
     }
 
     @Override

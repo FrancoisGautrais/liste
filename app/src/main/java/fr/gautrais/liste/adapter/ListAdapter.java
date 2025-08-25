@@ -1,5 +1,6 @@
 package fr.gautrais.liste.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 
@@ -21,23 +22,40 @@ import fr.gautrais.liste.model.entities.ListItemEntry;
 
 public class ListAdapter extends BaseAdapter<ListEntry, ListViewHolder> {
 
-
     protected List<ListEntry> mDataset;
     ListEntryDao mDao;
 
-    public ListAdapter(Context ctx) {
+    BaseAdapter mParent;
+
+    public ListAdapter(Activity ctx) {
         super(ctx);
         mDao = AppDatabase.getInstance().listeDao();
         mDataset = mDao.getAll();
         Collections.sort(mDataset, Comparator.comparingInt(item -> item.order_num));
     }
 
-    public ListAdapter(Context ctx, List<ListEntry> lists) {
+    public ListAdapter(Activity ctx, List<ListEntry> lists) {
         super(ctx);
         mDao = AppDatabase.getInstance().listeDao();
         mDataset = lists;
         Collections.sort(mDataset, Comparator.comparingInt(item -> item.order_num));
     }
+    public ListAdapter(Activity ctx, List<ListEntry> lists, int select) {
+        super(ctx, select);
+        mDao = AppDatabase.getInstance().listeDao();
+        mDataset = lists;
+        Collections.sort(mDataset, Comparator.comparingInt(item -> item.order_num));
+    }
+
+    public void setParent(BaseAdapter parent){
+        mParent = parent;
+    }
+
+
+    public BaseAdapter getParent(){
+        return mParent;
+    }
+
 
 
     @Override

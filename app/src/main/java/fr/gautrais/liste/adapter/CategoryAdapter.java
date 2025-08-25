@@ -1,5 +1,6 @@
 package fr.gautrais.liste.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 
@@ -23,12 +24,21 @@ public class CategoryAdapter extends BaseAdapter<Category, CategoryHolder> {
     protected List<Category> mDataset;
     CategoryDao mDao;
 
-    public CategoryAdapter(Context ctx) {
+    public CategoryAdapter(Activity ctx) {
         super(ctx);
         mDao = AppDatabase.getInstance().categoryDao();
         mDataset = mDao.getAll();
         Collections.sort(mDataset, Comparator.comparingInt(item -> item.order_num));
     }
+
+    public CategoryAdapter(Activity ctx, int select) {
+        super(ctx, select);
+        mDao = AppDatabase.getInstance().categoryDao();
+        mDataset = mDao.getAll();
+        Collections.sort(mDataset, Comparator.comparingInt(item -> item.order_num));
+    }
+
+
 
     @Override
     protected CategoryHolder _instanciate(@NonNull View view) {
@@ -82,4 +92,7 @@ public class CategoryAdapter extends BaseAdapter<Category, CategoryHolder> {
 
         notifyItemMoved(fromPosition, toPosition);
     }
+
+
+
 }

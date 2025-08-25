@@ -47,4 +47,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="rename">Renommer</string>
     <string name="remove">Supprimer</string>
+    <string name="importer">Importer depuis une liste</string>
+    <string name="action_clear">Vider la liste</string>
 </resources>

@@ -12,15 +12,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Liste">
         <activity
+            android:name=".SelectItemsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SelectListActivity"
+            android:exported="false" />
+        <activity
             android:name=".EditListActivity"
             android:exported="false"
-            android:theme="@style/Theme.Liste" >
-        </activity>
+            android:theme="@style/Theme.Liste" />
         <activity
             android:name=".ListsActivity"
             android:exported="true"
             android:theme="@style/Theme.Liste">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

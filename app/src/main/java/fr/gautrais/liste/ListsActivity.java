@@ -14,12 +14,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import fr.gautrais.liste.adapter.CategoryAdapter;
-import fr.gautrais.liste.adapter.ListAdapter;
 import fr.gautrais.liste.common.ui.EntryDialog;
 import fr.gautrais.liste.databinding.ActivityListsBinding;
 import fr.gautrais.liste.model.AppDatabase;
 import fr.gautrais.liste.model.entities.Category;
-import fr.gautrais.liste.model.entities.ListEntryWithItems;
 
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,12 +26,9 @@ import java.util.List;
 
 public class ListsActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private AppBarConfiguration appBarConfiguration;
-    private ActivityListsBinding binding;
+    private CategoryAdapter mAadapter;
 
-    private CategoryAdapter adapter;
-
-    private FloatingActionButton btn_add;
+    private FloatingActionButton mBtnAdd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,20 +36,20 @@ public class ListsActivity extends AppCompatActivity implements View.OnClickList
 
         ActivityListsBinding binding = ActivityListsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        btn_add =  this.findViewById(R.id.btn_add);
-        btn_add.setOnClickListener(this);
+        mBtnAdd =  this.findViewById(R.id.btn_add);
+        mBtnAdd.setOnClickListener(this);
 
 
         AppDatabase app = AppDatabase.getInstance(this);
 
         List<Category> dataset = app.categoryDao().getAll();
-        adapter = new CategoryAdapter(this);
+        mAadapter = new CategoryAdapter(this);
 
 
         setSupportActionBar(binding.toolbar);
         RecyclerView recyclerView = findViewById(R.id.rc_listes);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(adapter);
+        recyclerView.setAdapter(mAadapter);
 
         ItemTouchHelper.Callback callback = new ItemTouchHelper.SimpleCallback(
                 ItemTouchHelper.UP | ItemTouchHelper.DOWN,
@@ -73,7 +68,7 @@ public class ListsActivity extends AppCompatActivity implements View.OnClickList
                 toPos = target.getBindingAdapterPosition();
 
                 // Affichage visuel seulement (swap temporaire)
-                adapter.swapItems(viewHolder.getBindingAdapterPosition(), target.getBindingAdapterPosition());
+                mAadapter.swapItems(viewHolder.getBindingAdapterPosition(), target.getBindingAdapterPosition());
                 return true;
             }
 
@@ -86,7 +81,7 @@ public class ListsActivity extends AppCompatActivity implements View.OnClickList
             public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
                 super.clearView(recyclerView, viewHolder);
                 if (fromPos != -1 && toPos != -1 && fromPos != toPos) {
-                    adapter.onItemMoveFinal(fromPos, toPos);
+                    mAadapter.onItemMoveFinal(fromPos, toPos);
                 }
                 fromPos = toPos = -1;
             }
@@ -135,11 +130,11 @@ public class ListsActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View view) {
-        if(view == btn_add){
+        if(view == mBtnAdd){
             EntryDialog.run(this, "Nom de la catégorie", new EntryDialog.ValidListener() {
                 @Override
                 public void onValid(EntryDialog dialog, String value) {
-                    adapter.add(value);
+                    mAadapter.add(value);
                 }
             });
         }

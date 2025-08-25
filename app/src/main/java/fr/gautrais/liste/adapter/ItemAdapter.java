@@ -1,5 +1,6 @@
 package fr.gautrais.liste.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 
@@ -8,21 +9,17 @@ import androidx.annotation.NonNull;
 import java.util.Collections;
 
 import fr.gautrais.liste.R;
-import fr.gautrais.liste.adapter.holder.BaseHolder;
 import fr.gautrais.liste.adapter.holder.ItemViewHolder;
+import fr.gautrais.liste.model.AppDatabase;
+import fr.gautrais.liste.model.dao.ListItemEntryDao;
 import fr.gautrais.liste.model.entities.ListEntryWithItems;
+import fr.gautrais.liste.model.entities.ListItemEntry;
 
 
 public class ItemAdapter extends BaseAdapter<ListEntryWithItems, ItemViewHolder>{
     private final ListEntryWithItems mDataset;
 
-
-    private boolean is_adding = false;
-
-    // Interface pour support drag & drop
-    public interface ItemTouchHelperAdapter {
-        boolean onItemMove(int fromPosition, int toPosition);
-    }
+    private boolean mIsAdding = false;
 
     public ListEntryWithItems getDataset() {
         return mDataset;
@@ -34,8 +31,14 @@ public class ItemAdapter extends BaseAdapter<ListEntryWithItems, ItemViewHolder>
      * @param dataset String[] containing the data to populate views to be used
      * by RecyclerView
      */
-    public ItemAdapter(Context ctx, ListEntryWithItems dataset) {
+    public ItemAdapter(Activity ctx, ListEntryWithItems dataset) {
         super(ctx);
+        mDataset = dataset;
+    }
+
+
+    public ItemAdapter(Activity ctx, ListEntryWithItems dataset, int select) {
+        super(ctx, select);
         mDataset = dataset;
     }
 
@@ -55,9 +58,9 @@ public class ItemAdapter extends BaseAdapter<ListEntryWithItems, ItemViewHolder>
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
         viewHolder.set_data(position);
-        if(is_adding){
+        if(mIsAdding){
             viewHolder.set_active();
-            is_adding=false;
+            mIsAdding =false;
         }
 
     }
@@ -65,13 +68,22 @@ public class ItemAdapter extends BaseAdapter<ListEntryWithItems, ItemViewHolder>
 
     public void insert_after(int i) {
         mDataset.add_item("", i+1);
-        is_adding = true;
+        mIsAdding = true;
+        notifyItemInserted(i+1);
+        //notifyDataSetChanged();
+    }
+    public void insert_after(int i, String value) {
+        mDataset.add_item(value, i+1);
+        mIsAdding = true;
         notifyItemInserted(i+1);
         //notifyDataSetChanged();
     }
 
     public void insert_after() {
         insert_after(mDataset.items.size()-1);
+    }
+    public void insert_after(String value) {
+        insert_after(mDataset.items.size()-1, value);
     }
 
     public void on_remove(int i){
@@ -108,4 +120,12 @@ public class ItemAdapter extends BaseAdapter<ListEntryWithItems, ItemViewHolder>
     public void onItemMoveFinal(int fromPosition, int toPosition) {
     }
 
+    public void clear() {
+        ListItemEntryDao dao = AppDatabase.getInstance().listeItemDao();
+        for(ListItemEntry x : dao.getItemsForListOrdered(mDataset.liste.id)){
+            dao.delete(x.id);
+        }
+        mDataset.items.clear();
+        notifyDataSetChanged();
+    }
 }

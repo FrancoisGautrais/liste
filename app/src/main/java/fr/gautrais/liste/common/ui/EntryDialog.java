@@ -2,8 +2,10 @@ package fr.gautrais.liste.common.ui;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.text.InputType;
 import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -96,6 +98,7 @@ public class EntryDialog extends AlertDialog.Builder implements TextView.OnEdito
     private void init(String text){
         setTitle(text);
         entry = new EditText(this.getContext());
+        entry.setInputType(InputType.TYPE_TEXT_FLAG_CAP_WORDS | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
         entry.setOnEditorActionListener(this);
         setView(entry);
         setPositiveButton("Valider", new DialogInterface.OnClickListener() {
@@ -108,7 +111,19 @@ public class EntryDialog extends AlertDialog.Builder implements TextView.OnEdito
                 cancel(false);
             }
         });
-        entry.requestFocus();
+
+        entry.post(() -> {
+            entry.requestFocus();
+
+
+            
+
+
+            InputMethodManager imm = (InputMethodManager) entry.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.showSoftInput(entry, InputMethodManager.SHOW_IMPLICIT);
+            }
+        });
     }
 
 

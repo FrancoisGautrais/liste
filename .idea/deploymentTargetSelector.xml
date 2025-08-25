@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-07-18T21:16:54.982068060Z">
+        <DropdownSelection timestamp="2025-07-22T20:23:10.154207600Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=/home/fanch/.config/.android/avd/Small_Phone.avd" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=pjheqsgylj7plrro" />
             </handle>
           </Target>
         </DropdownSelection>

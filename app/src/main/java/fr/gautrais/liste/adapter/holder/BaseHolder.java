@@ -5,23 +5,24 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.List;
-
-import fr.gautrais.liste.R;
 import fr.gautrais.liste.adapter.BaseAdapter;
-import fr.gautrais.liste.adapter.ListAdapter;
-import fr.gautrais.liste.model.entities.ListItemEntry;
 
 public abstract class BaseHolder<T> extends RecyclerView.ViewHolder{
 
-
+    protected int mMode = 0;
     protected Object mParentObj;
 
     protected T mValue;
 
-    public BaseHolder(@NonNull View itemView, Object parent) {
+    public BaseHolder(@NonNull View itemView, BaseAdapter parent) {
         super(itemView);
         mParentObj = parent;
+        mMode = parent.getMode();
+    }
+    public BaseHolder(@NonNull View itemView, Object parent, int select) {
+        super(itemView);
+        mParentObj = parent;
+        mMode = select;
     }
 
 
